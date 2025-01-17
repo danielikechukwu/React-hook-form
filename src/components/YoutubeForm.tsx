@@ -1,25 +1,28 @@
-import { useForm, UseFormReturn, useFieldArray, FieldErrors } from "react-hook-form";
+import {
+  useForm,
+  UseFormReturn,
+  useFieldArray,
+  FieldErrors,
+} from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
-import { useEffect } from "react";
 
 interface IFormInput {
-  username: string,
-  email: string,
-  channel: string,
+  username: string;
+  email: string;
+  channel: string;
   socials: {
-    twitter: string,
-    facebook: string,
-  },
-  phoneNumbers: string[],
+    twitter: string;
+    facebook: string;
+  };
+  phoneNumbers: string[];
   phnNumbers: {
-    number: string
-  }[],
-  age: number,
-  dob: Date | null
+    number: string;
+  }[];
+  age: number;
+  dob: Date | null;
 }
 
 const YoutubeForm = () => {
-
   const form: UseFormReturn<IFormInput> = useForm<IFormInput>({
     defaultValues: {
       username: "",
@@ -32,7 +35,7 @@ const YoutubeForm = () => {
       phoneNumbers: ["", ""],
       phnNumbers: [{ number: "" }],
       age: 0,
-      dob: null
+      dob: null,
     },
   });
 
@@ -40,30 +43,37 @@ const YoutubeForm = () => {
     console.log("Form submitted", data);
   };
 
-  const { register, control, handleSubmit, formState, watch, getValues, setValue } = form;
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState,
+    watch,
+    getValues,
+    setValue,
+  } = form;
 
-  const { errors } = formState;
-
+  const { errors, isDirty, isValid } = formState;
 
   const handleGetValues = () => {
-    console.log("Get values : ", getValues("username"));
-  }
+    console.log("Get values : ", getValues());
+  };
 
   const handleSetValues = () => {
     setValue("username", "James", {
       shouldValidate: true,
       shouldDirty: true,
-      shouldTouch: true
-    })
-  }
+      shouldTouch: true,
+    });
+  };
 
   const onErrors = (errors: FieldErrors<IFormInput>) => {
     console.log("Form errors : ", errors);
-  }
+  };
 
   const { fields, append, remove } = useFieldArray({
-    name: 'phnNumbers',
-    control
+    name: "phnNumbers",
+    control,
   });
 
   return (
@@ -180,7 +190,6 @@ const YoutubeForm = () => {
               required: {
                 value: true,
                 message: "Twitter is compulsory",
-
               },
             })}
           />
@@ -236,31 +245,47 @@ const YoutubeForm = () => {
         </div>
 
         <div>
-
           <label>List of phone number</label>
 
           <div>
-            {
-              fields.map((field, index) => {
-                return (
-                  <div className="form-control" key={field.id}>
-                    <input type="text" {...register(`phnNumbers.${index}.number`)} />
-                    {
-                      index > 0 && (
-                        <button type="button" onClick={() => { remove(index) }}>Remove</button>
-                      )
-                    }
-                  </div>
-                )
-              })
-            }
-            <button type="button" onClick={() => { append({ number: "" }) }}>Add phone number</button>
+            {fields.map((field, index) => {
+              return (
+                <div className="form-control" key={field.id}>
+                  <input
+                    type="text"
+                    {...register(`phnNumbers.${index}.number`)}
+                  />
+                  {index > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        remove(index);
+                      }}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+            <button
+              type="button"
+              onClick={() => {
+                append({ number: "" });
+              }}
+            >
+              Add phone number
+            </button>
           </div>
         </div>
 
-        <button>submit</button>
-        <button type="button" onClick={handleGetValues}>Get values</button>
-        <button type="button" onClick={handleSetValues}>Set values</button>
+        <button disabled={!isDirty || !isValid}>submit</button>
+        <button type="button" onClick={handleGetValues}>
+          Get values
+        </button>
+        <button type="button" onClick={handleSetValues}>
+          Set values
+        </button>
       </form>
 
       <DevTool control={control} />
