@@ -1,5 +1,6 @@
-import { useForm, UseFormReturn, useFieldArray } from "react-hook-form";
+import { useForm, UseFormReturn, useFieldArray, FieldErrors } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
+import { useEffect } from "react";
 
 interface IFormInput {
   username: string,
@@ -12,7 +13,9 @@ interface IFormInput {
   phoneNumbers: string[],
   phnNumbers: {
     number: string
-  }[]
+  }[],
+  age: number,
+  dob: Date | null
 }
 
 const YoutubeForm = () => {
@@ -27,7 +30,9 @@ const YoutubeForm = () => {
         facebook: "",
       },
       phoneNumbers: ["", ""],
-      phnNumbers: [{ number: "" }]
+      phnNumbers: [{ number: "" }],
+      age: 0,
+      dob: null
     },
   });
 
@@ -35,9 +40,26 @@ const YoutubeForm = () => {
     console.log("Form submitted", data);
   };
 
-  const { register, control, handleSubmit, formState } = form;
+  const { register, control, handleSubmit, formState, watch, getValues, setValue } = form;
 
   const { errors } = formState;
+
+
+  const handleGetValues = () => {
+    console.log("Get values : ", getValues("username"));
+  }
+
+  const handleSetValues = () => {
+    setValue("username", "James", {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true
+    })
+  }
+
+  const onErrors = (errors: FieldErrors<IFormInput>) => {
+    console.log("Form errors : ", errors);
+  }
 
   const { fields, append, remove } = useFieldArray({
     name: 'phnNumbers',
@@ -46,7 +68,7 @@ const YoutubeForm = () => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit(onSubmit)} noValidate>
+      <form onSubmit={handleSubmit(onSubmit, onErrors)} noValidate>
         <div className="form-control">
           <label htmlFor="username">Username</label>
           <input
@@ -114,15 +136,51 @@ const YoutubeForm = () => {
         </div>
 
         <div className="form-control">
+          <label htmlFor="age">Age</label>
+          <input
+            type="number"
+            id="age"
+            placeholder="Enter age"
+            {...register("age", {
+              valueAsNumber: true,
+              required: {
+                value: true,
+                message: "Age is compulsory",
+              },
+            })}
+          />
+          <p className="error">{errors.age?.message}</p>
+        </div>
+
+        <div className="form-control">
+          <label htmlFor="dob">Date of Birth</label>
+          <input
+            type="date"
+            id="dob"
+            placeholder="Enter date of birth"
+            {...register("dob", {
+              valueAsDate: true,
+              required: {
+                value: true,
+                message: "Date of Birth is compulsory",
+              },
+            })}
+          />
+          <p className="error">{errors.dob?.message}</p>
+        </div>
+
+        <div className="form-control">
           <label htmlFor="twitter">Twitter</label>
           <input
             type="text"
             id="twitter"
             placeholder="Enter twitter"
             {...register("socials.twitter", {
+              disabled: watch("channel") === "",
               required: {
                 value: true,
                 message: "Twitter is compulsory",
+
               },
             })}
           />
@@ -186,21 +244,23 @@ const YoutubeForm = () => {
               fields.map((field, index) => {
                 return (
                   <div className="form-control" key={field.id}>
-                    <input type="text" {...register(`phnNumbers.${index}.number`)} />                    
-                  {
-                    index > 0 && (
-                      <button type="button" onClick={() => { remove(index) }}>Remove</button>
-                    )
-                  }
+                    <input type="text" {...register(`phnNumbers.${index}.number`)} />
+                    {
+                      index > 0 && (
+                        <button type="button" onClick={() => { remove(index) }}>Remove</button>
+                      )
+                    }
                   </div>
                 )
               })
             }
-            <button type="button" onClick={() => { append({ number: ""})}}>Add phone number</button>
+            <button type="button" onClick={() => { append({ number: "" }) }}>Add phone number</button>
           </div>
         </div>
 
         <button>submit</button>
+        <button type="button" onClick={handleGetValues}>Get values</button>
+        <button type="button" onClick={handleSetValues}>Set values</button>
       </form>
 
       <DevTool control={control} />
