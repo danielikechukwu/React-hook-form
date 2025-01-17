@@ -27,7 +27,7 @@ const YoutubeForm = () => {
         facebook: "",
       },
       phoneNumbers: ["", ""],
-      phnNumbers: [{ number: ""}]
+      phnNumbers: [{ number: "" }]
     },
   });
 
@@ -39,7 +39,7 @@ const YoutubeForm = () => {
 
   const { errors } = formState;
 
-  const { fields } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     name: 'phnNumbers',
     control
   });
@@ -175,6 +175,29 @@ const YoutubeForm = () => {
             })}
           />
           <p className="error">{errors.phoneNumbers?.[1]?.message}</p>
+        </div>
+
+        <div>
+
+          <label>List of phone number</label>
+
+          <div>
+            {
+              fields.map((field, index) => {
+                return (
+                  <div className="form-control" key={field.id}>
+                    <input type="text" {...register(`phnNumbers.${index}.number`)} />                    
+                  {
+                    index > 0 && (
+                      <button type="button" onClick={() => { remove(index) }}>Remove</button>
+                    )
+                  }
+                  </div>
+                )
+              })
+            }
+            <button type="button" onClick={() => { append({ number: ""})}}>Add phone number</button>
+          </div>
         </div>
 
         <button>submit</button>
