@@ -8,22 +8,23 @@ import { DevTool } from "@hookform/devtools";
 import { useEffect } from "react";
 
 interface IFormInput {
-  username: string,
-  email: string,
-  channel: string,
+  username: string;
+  email: string;
+  channel: string;
   socials: {
-    twitter: string,
-    facebook: string,
+    twitter: string;
+    facebook: string;
   };
-  phoneNumbers: string[],
+  phoneNumbers: string[];
   phnNumbers: {
-    number: string,
+    number: string;
   }[];
-  age: number,
-  dob: Date | null
+  age: number;
+  dob: Date | null;
 }
 
 const YoutubeForm = () => {
+  
   const form: UseFormReturn<IFormInput> = useForm<IFormInput>({
     defaultValues: {
       username: "",
@@ -38,7 +39,7 @@ const YoutubeForm = () => {
       age: 0,
       dob: null,
     },
-    mode: "onChange"
+    mode: "onBlur",
   });
 
   const onSubmit = (data: IFormInput) => {
@@ -53,20 +54,22 @@ const YoutubeForm = () => {
     watch,
     getValues,
     setValue,
-    reset
+    reset,
+    trigger,
   } = form;
 
-  const { errors, isSubmitting, isSubmitted, isSubmitSuccessful, submitCount } = formState;
+  const { errors, isSubmitting, isSubmitted, isSubmitSuccessful, submitCount } =
+    formState;
 
   const handleGetValues = () => {
     console.log("Get values : ", getValues());
   };
 
   useEffect(() => {
-    if(isSubmitSuccessful){
-      reset()
+    if (isSubmitSuccessful) {
+      reset();
     }
-  }, [isSubmitSuccessful, reset])
+  }, [isSubmitSuccessful, reset]);
 
   console.log({ isSubmitting, isSubmitted, isSubmitSuccessful, submitCount });
 
@@ -135,14 +138,14 @@ const YoutubeForm = () => {
                   );
                 },
                 emailAvaliable: async (fieldValue: string) => {
+                  const res = await fetch(
+                    `https://jsonplaceholder.typicode.com/users?email=${fieldValue}`
+                  );
 
-                  const res = await fetch(`https://jsonplaceholder.typicode.com/users?email=${fieldValue}`);
-
-                  const data = await res.json();  
+                  const data = await res.json();
 
                   return data.length == 0 || "Email already exist";
-
-                }
+                },
               },
             })}
           />
@@ -303,11 +306,20 @@ const YoutubeForm = () => {
         <button type="button" onClick={handleGetValues}>
           Get values
         </button>
-        <button type="button" onClick={() => { reset() }}>
+        <button
+          type="button"
+          onClick={() => {
+            reset();
+          }}
+        >
           Reset
         </button>
         <button type="button" onClick={handleSetValues}>
           Set values
+        </button>
+
+        <button type="button" onClick={() => trigger()}>
+          Validate
         </button>
       </form>
 
