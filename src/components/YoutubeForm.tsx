@@ -38,7 +38,7 @@ const YoutubeForm = () => {
       age: 0,
       dob: null,
     },
-    mode: "onTouched"
+    mode: "onChange"
   });
 
   const onSubmit = (data: IFormInput) => {
