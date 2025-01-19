@@ -15,14 +15,13 @@ const schema = z.object({
 });
 
 const ZodForm = () => {
-
   const form: UseFormReturn<IFormInput> = useForm<IFormInput>({
     resolver: zodResolver(schema),
     defaultValues: {
       username: "",
       email: "",
       channel: "",
-    },
+    }
   });
 
   const { handleSubmit, register, formState } = form;
@@ -34,8 +33,11 @@ const ZodForm = () => {
   };
 
   return (
+
     <div>
+
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
+
         <div className="form-control">
           <label htmlFor="username">Username</label>
           <input
@@ -70,8 +72,11 @@ const ZodForm = () => {
         </div>
 
         <button>submit</button>
+
       </form>
+
     </div>
+    
   );
 };
 
